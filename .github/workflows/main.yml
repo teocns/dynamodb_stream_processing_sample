@@ -32,5 +32,5 @@ jobs:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: eu-west-3
-          function_name: generate_crawler_threads_from_processes	
+          function_name: dynamodb_crawler_process_stream_processing		
           zip_file: bundle.zip
