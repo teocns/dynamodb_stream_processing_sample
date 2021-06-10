@@ -2,6 +2,13 @@ import json
 import boto3
 import uuid
 import time
+import hashlib
+
+
+def get_md5(strr):
+    m = hashlib.md5()
+    m.update(strr)
+    return str(m.hexdigest())
 
 
 def lambda_handler(event, context):
@@ -18,30 +25,22 @@ def lambda_handler(event, context):
 
             # Generate crawler_thread
 
-            cp = {
-                "process_id": 123123,
-                "thread_id": 1231231,
-                "domain": "bro.com",
-                "url": "http://bro.com/gang/bang",
-                "links_scraper_crawler_engine": "spider",
-                "age": 123981293871
-            }
-
             crawler_threads_table.put_item(
                 Item={
-                    'process_id': crawler_process['process_id'],
+                    'process_id': str(crawler_process['process_id']),
                     'thread_id':   str(uuid.uuid4()),
                     'domain': crawler_process['domain'],
                     'url': crawler_process['url'],
-                    'crawler_engine': crawler_process['links_scraper_crawler_engine'],
-                    'age_created': crawler_process['age'],
-                    'age_inserted': int(time.time()),
-                    'scraped_links': 0,
-                    'scraped_links_duplicates': 0,
-                    'scraped_jobs': 0,
-                    'bytes_transferred': 0,
-                    'action_type': 'SCRAPE_LINKS',
-                    'is_completed': 0
+                    'url_md5': get_md5(crawler_process['url']),
+                    'engine': crawler_process['links_scraper_crawler_engine'],
+                    'age_create': crawler_process['age'],
+                    'age_in': int(time.time()),
+                    'links': 0,
+                    'links_dups': 0,
+                    'jobs': 0,
+                    'bytes': 0,
+                    'scrape': 'LINKS',
+                    'done': 0
                 }
             )
 
