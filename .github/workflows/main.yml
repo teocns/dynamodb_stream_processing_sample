@@ -24,7 +24,7 @@ jobs:
       - name: zip
         uses: montudor/action-zip@v0.1.0
         with:
-          args: "zip -r ./bundle.zip . -x '*.git*'"
+          args: "zip -r ./bundle.zip ./."
       - name: default deploy
         uses: appleboy/lambda-action@master
         with:
