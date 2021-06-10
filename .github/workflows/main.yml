@@ -23,9 +23,9 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: zip
-        uses: montudor/action-zip@v0.1.0
+        uses: actions/checkout@v1
         with:
-          args:  zip -qq -r ./bundle.zip ./.
+          args:   zip -r bundle.zip .
       - name: default deploy
         uses: appleboy/lambda-action@master
         with:
@@ -33,4 +33,4 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: eu-west-3
           function_name: generate_crawler_threads_from_processes	
-          zip_file: bundle.zip
+          zip_file: ./bundle.zip
