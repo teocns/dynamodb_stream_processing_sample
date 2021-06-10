@@ -21,10 +21,11 @@ jobs:
     runs-on: ubuntu-latest
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      - uses: actions/checkout@v2
       - name: zip
         uses: montudor/action-zip@v0.1.0
         with:
-          args: "zip -r ./bundle.zip ./."
+          args: "zip -r ./bundle.zip ."
       - name: default deploy
         uses: appleboy/lambda-action@master
         with:
