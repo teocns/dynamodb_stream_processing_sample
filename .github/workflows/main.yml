@@ -23,14 +23,12 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: zip
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
         with:
-          working-directory: /
           args:   zip -r ./bundle.zip .
       - name: default deploy
         uses: appleboy/lambda-action@master
         with:
-          working-directory: /
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: eu-west-3
