@@ -44,7 +44,7 @@ def parse_image(image):
 
             crawler_thread[key] = value
 
-    yield crawler_thread
+    return crawler_thread
 
 
 def lambda_handler(event, context):
