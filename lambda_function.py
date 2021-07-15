@@ -77,3 +77,18 @@ def lambda_handler(event, context):
         'statusCode': 200,
         'body': 'ok'
     }
+
+
+# on_crawler_process_inserted({
+#     'links_scraper_crawler_engine': 'SCRAPER',
+#     'domain': 'api.ipify.org',
+#     'url': 'https://api.ipify.org/?format=json',
+#     'crawler_threads_cnt:done_scraping_links': 0,
+#     'url_id-process-index': '753656-1',
+#     'total_scraped_jobs': 0,
+#     'url_id': 753656,
+#     'crawler_process_index': 1,
+#     'total_scraped_links': 0,
+#     'age': 1626371268
+# }
+# )

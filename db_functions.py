@@ -25,7 +25,7 @@ def generate_main_thread_for_crawler_process(crawler_process) -> DomainStatistic
     db = boto3.resource('dynamodb', region_name="eu-west-3",
                         aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
 
-    table = db.Table('domains_statistics')
+    table = db.Table('crawler_threads')
 
     table.put_item(
         Item={
@@ -45,7 +45,7 @@ def generate_main_thread_for_crawler_process(crawler_process) -> DomainStatistic
             'scrape': 'LINKS',
             'done': 0
         },
-        ReturnValues="ALL"
+        # ReturnValues="ALL"
     )
 
 
