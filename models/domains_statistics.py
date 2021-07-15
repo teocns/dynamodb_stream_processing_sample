@@ -1,0 +1,20 @@
+class DomainStatistics:
+    domain: int
+    avg_scraped_links_per_crawl: int
+    avg_duplicate_scraped_links_per_crawl: int
+    avg_scraped_jobs_per_crawl: int
+    avg_bytes_transferred: int
+    max_scraped_links: int
+    max_scraped_jobs: int
+    max_bytes_transferred: int
+    max_duplicates: int
+    min_scraped_links: int
+    min_scraped_jobs: int
+    min_duplicates: int
+    min_bytes_transferred: int
+    total_scraped_jobs: int
+    total_scraped_links: int
+    total_duplicates: int
+    total_bytes_transferred: int
+    crawler_process_cnt: int
+    pass

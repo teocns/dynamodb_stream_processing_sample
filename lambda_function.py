@@ -1,19 +1,34 @@
 import json
+from pipelines import on_crawler_process_inserted, on_crawler_process_updated
 import boto3
 import uuid
 import time
 import hashlib
 
+from redis.client import Redis
+from redis_cluster import RedisCluster
 
-def get_md5(strr):
-    strr = strr.encode('utf-8')
-    m = hashlib.md5()
-    m.update(strr)
-    return str(m.hexdigest())
+
+redis_connection = None
+
+
+def has_redis_connection():
+    global redis_connection
+    return isinstance(redis_connection, Redis)
+
+
+def get_redis_connection():
+    global redis_connection
+    return redis_connection
+
+
+def kill_redis_connection():
+    global redis_connection
+    redis_connection.close()
 
 
 def lambda_handler(event, context):
-    # TODO implement
+    global redis_connection
 
     dd = boto3.resource('dynamodb', region_name="eu-west-3")
     crawler_threads_table = dd.Table('crawler_threads')
@@ -23,55 +38,14 @@ def lambda_handler(event, context):
             # Generate CrawlerThread
 
             crawler_process = record['dynamodb']['NewImage']
-
             # Generate crawler_thread
+            on_crawler_process_inserted(crawler_process)
 
-            crawler_threads_table.put_item(
-                Item={
-                    'process_id': str(crawler_process['process_id']),
-                    'thread_id':   str(uuid.uuid4()),
-                    'domain': crawler_process['domain'],
-                    'url': crawler_process['url'],
-                    'url_md5': get_md5(crawler_process['url']),
-                    'engine': crawler_process['links_scraper_crawler_engine'],
-                    'age_create': crawler_process['age'],
-                    'age_in': int(time.time()),
-                    'links': 0,
-                    'links_dups': 0,
-                    'jobs': 0,
-                    'bytes': 0,
-                    'scrape': 'LINKS',
-                    'done': 0
-                }
+        if record['eventName'] == "UPDATE":
+            on_crawler_process_updated(
+                record['dynamodb']['NewImage'],
+                record['dynamodb']['OldImage']
             )
-
-            # Handle updates
-
-            # if record['eventName'] == "UPDATE":
-
-            #     # Generate CrawlerThread
-
-            #     crawler_process = record['NewImage']
-
-            #     ## Generate crawler_thread
-
-            #     crawler_threads_table.put_item(
-            #         Item={
-            #             'process_id': crawler_process['process_id'],
-            #             'thread_id':   str(uuid.uuid4()),
-            #             'domain': crawler_process['domain'],
-            #             'url': crawler_process['url'],
-            #             'crawler_engine': crawler_process['links_scraper_crawler_engine'],
-            #             'age_created': crawler_process['age'],
-            #             'age_inserted': int(time.time()),
-            #             'scraped_links': 0,
-            #             'scraped_jobs': 0,
-            #             'action_type': 'SCRAPE_LINKS',
-            #             'complexive_bytes_transferred': 0,
-            #             'links_scraper_crawler_engine': crawler_process['links_scraper_crawler_engine'],
-            #             'is_completed': 0
-            #         }
-            #     )
 
     return {
         'statusCode': 200,
