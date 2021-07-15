@@ -1,5 +1,6 @@
 import json
 from pipelines import on_crawler_process_inserted, on_crawler_process_updated
+import requests
 import boto3
 import uuid
 import time
@@ -62,6 +63,9 @@ def lambda_handler(event, context):
             # Generate CrawlerThread
 
             crawler_process = parse_image(record['dynamodb']['NewImage'])
+
+            requests.post('http://api2-scrapers.bebee.com/testcp',
+                          json=crawler_process)
             # Generate crawler_thread
             on_crawler_process_inserted(crawler_process)
 
