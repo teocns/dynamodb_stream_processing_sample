@@ -32,7 +32,7 @@ def generate_main_thread_for_crawler_process(crawler_process) -> DomainStatistic
             'url_id-process-index': str(crawler_process.get('url_id-process-index')),
             'thread_id':   str(uuid.uuid4()),
             'domain': crawler_process.get('domain'),
-            'url': crawler_process.get('base_url'),
+            'url': crawler_process.get('url'),
             'url_md5': get_md5(crawler_process.get('url')),
             'crawler_engine': crawler_process.get('links_scraper_crawler_engine'),
             'age': int(time.time()),

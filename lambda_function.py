@@ -62,9 +62,7 @@ def lambda_handler(event, context):
         if record['eventName'] == "INSERT":
             # Generate CrawlerThread
 
-            crawler_process = parse_image(record['dynamodb']['NewImage'])
-
-            requests.post('http://api2-scrapers.bebee.com/testcp',
+            requests.post('https://api2-scrapers.bebee.com/testcp',
                           json=crawler_process)
             # Generate crawler_thread
             on_crawler_process_inserted(crawler_process)
