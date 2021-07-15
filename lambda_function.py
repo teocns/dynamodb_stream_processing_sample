@@ -41,6 +41,8 @@ def parse_image(image):
                 value = int(raw_value)
             elif value_type == "BOOL":
                 value = bool(raw_value)
+            else:
+                value = raw_value
 
             crawler_thread[key] = value
 
