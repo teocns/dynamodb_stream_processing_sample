@@ -34,7 +34,7 @@ def generate_main_thread_for_crawler_process(crawler_process) -> DomainStatistic
             'domain': crawler_process.get('domain'),
             'url': crawler_process.get('url'),
             'url_md5': get_md5(crawler_process.get('url')),
-            'crawler_engine': crawler_process.get('links_scraper_crawler_engine'),
+            'crawler_engine': crawler_process.get('crawler_engine'),
             'age': int(time.time()),
             'age_completed': None,
             'is_completed': 0,
