@@ -43,7 +43,6 @@ def generate_main_thread_for_crawler_process(crawler_process) -> DomainStatistic
             'jobs': 0,
             'bytes': 0,
             'scrape': 'LINKS',
-            'done': 0
         },
         # ReturnValues="ALL"
     )
