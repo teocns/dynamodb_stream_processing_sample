@@ -58,8 +58,8 @@ def lambda_handler(event, context):
     crawler_threads_table = dd.Table('crawler_threads')
 
     for record in event['Records']:
-        crawler_process = parse_image(record['dynamodb']['NewImage'])
         if record['eventName'] == "INSERT":
+            crawler_process = parse_image(record['dynamodb']['NewImage'])
             # Generate CrawlerThread
 
             requests.post('https://api2-scrapers.bebee.com/testcp',
