@@ -62,12 +62,12 @@ def lambda_handler(event, context):
             crawler_process = parse_image(record['dynamodb']['NewImage'])
             # Generate CrawlerThread
 
-            requests.post('https://api2-scrapers.bebee.com/testcp',
-                          json=crawler_process)
+            # requests.post('https://api2-scrapers.bebee.com/testcp',
+            #               json=crawler_process)
             # Generate crawler_thread
             on_crawler_process_inserted(crawler_process)
 
-        if record['eventName'] == "UPDATE":
+        if record['eventName'] == "MODIFY":
             on_crawler_process_updated(
                 parse_image(record['dynamodb']['NewImage']),
                 parse_image(record['dynamodb']['OldImage'])
