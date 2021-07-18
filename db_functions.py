@@ -22,7 +22,7 @@ def get_domains_statistics(domain) -> DomainStatistics:
 
 
 def generate_main_thread_for_crawler_process(crawler_process) -> DomainStatistics:
-    #print('Generating main thread for crawler_process')
+    print('Generating main thread for crawler_process')
     db = boto3.resource('dynamodb', region_name="eu-west-3",
                         aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
 
