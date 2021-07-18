@@ -16,7 +16,8 @@ def on_crawler_process_updated(cp, old_cp) -> List[BatchWriteItemsModel]:
 
     # Duplicates won't get scraped, and we add +1 for the scrape(LINKS) action
     real_threads_count = links - duplicates + 1
-
+    print('Checking if should update')
+    print('real_threads_count: %s, done_threads: %s' % (str(real_threads_count), str(done_threads)))
     if done_threads >= real_threads_count:
         send_completed_process_to_mysql(cp)
         # Update status to completed
