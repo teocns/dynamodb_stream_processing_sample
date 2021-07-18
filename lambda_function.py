@@ -92,7 +92,8 @@ def lambda_handler(event, context):
                         'event':event
                     }
                 )
-            except:
+            except Exception as ex:
+                print(str(ex))
                 pass
             return { "batchItemFailures": [ {"itemIdentifier": record['dynamodb']['SequenceNumber']} ]  }
     return {
