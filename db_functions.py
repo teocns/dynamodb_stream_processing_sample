@@ -27,11 +27,11 @@ def generate_main_thread_for_crawler_process(crawler_process) -> DomainStatistic
                         aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
 
     table = db.Table('crawler_threads')
-
+    process_id = str(crawler_process.get('url_id-process-index'))
     table.put_item(
         Item={
-            'url_id-process-index': str(crawler_process.get('url_id-process-index')),
-            'thread_id':   str(uuid.uuid4()),
+            'url_id-process-index': process_id,
+            'thread_id': '%s-%s' % (process_id,str(1)),
             'domain': crawler_process.get('domain'),
             'url': crawler_process.get('url'),
             'url_md5': get_md5(crawler_process.get('url')),
