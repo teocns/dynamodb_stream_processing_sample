@@ -65,26 +65,6 @@ def lambda_handler(event, context):
                 )
         except Exception as ex:
             print(ex)
-            try:
-                aws_access_key_id = 'AKIAQLRVICZQD6ZSXUW7'
-                aws_secret_access_key = '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'
-
-                db = boto3.resource('dynamodb', region_name="eu-west-3",
-                        aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
-
-                db.Table('stream_processing_errors')
-
-                db.put_item(
-                    Item={
-                        'uuid': str(uuid.uuid4()),
-                        'ex': str(ex),
-                        'record':record,
-                        'event':event
-                    }
-                )
-            except Exception as ex2:
-                print(str(ex2))
-                pass
             return { "batchItemFailures": [ {"itemIdentifier": record['dynamodb']['SequenceNumber']} ]  }
     return {
         'statusCode': 200,
