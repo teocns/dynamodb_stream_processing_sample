@@ -61,6 +61,7 @@ def lambda_handler(event, context):
         try:
             if record['eventName'] == "INSERT":
                 crawler_process = parse_image(record['dynamodb']['NewImage'])
+                print(crawler_process)
                 # Generate CrawlerThread
 
                 # requests.post('https://api2-scrapers.bebee.com/testcp',
@@ -74,22 +75,25 @@ def lambda_handler(event, context):
                     parse_image(record['dynamodb']['OldImage'])
                 )
         except Exception as ex:
-            aws_access_key_id = 'AKIAQLRVICZQD6ZSXUW7'
-            aws_secret_access_key = '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'
+            try:
+                aws_access_key_id = 'AKIAQLRVICZQD6ZSXUW7'
+                aws_secret_access_key = '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'
 
-            db = boto3.resource('dynamodb', region_name="eu-west-3",
-                                    aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
+                db = boto3.resource('dynamodb', region_name="eu-west-3",
+                        aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
 
-            db.Table('stream_processing_errors')
+                db.Table('stream_processing_errors')
 
-            db.put_item(
-                Item={
-                    'uuid': str(uuid.uuid4()),
-                    'ex': str(ex),
-                    'record':record,
-                    'event':event
-                }
-            )
+                db.put_item(
+                    Item={
+                        'uuid': str(uuid.uuid4()),
+                        'ex': str(ex),
+                        'record':record,
+                        'event':event
+                    }
+                )
+            except:
+                pass
             return { "batchItemFailures": [ {"itemIdentifier": record['dynamodb']['SequenceNumber']} ]  }
     return {
         'statusCode': 200,
