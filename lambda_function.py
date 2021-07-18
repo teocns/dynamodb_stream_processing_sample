@@ -1,31 +1,23 @@
-import json
 from pipelines import on_crawler_process_inserted, on_crawler_process_updated
-import requests
 import boto3
 import uuid
-import time
-import hashlib
 
-from redis.client import Redis
-from redis_cluster import RedisCluster
+# redis_connection = None
 
 
-redis_connection = None
+# def has_redis_connection():
+#     global redis_connection
+#     return isinstance(redis_connection, Redis)
 
 
-def has_redis_connection():
-    global redis_connection
-    return isinstance(redis_connection, Redis)
+# def get_redis_connection():
+#     global redis_connection
+#     return redis_connection
 
 
-def get_redis_connection():
-    global redis_connection
-    return redis_connection
-
-
-def kill_redis_connection():
-    global redis_connection
-    redis_connection.close()
+# def kill_redis_connection():
+#     global redis_connection
+#     redis_connection.close()
 
 
 def parse_image(image):
@@ -51,9 +43,9 @@ def parse_image(image):
 
 
 def lambda_handler(event, context):
-    global redis_connection
+    
 
-
+    print('Lambda handler started')
     for record in event['Records']:
         try:
             if record['eventName'] == "INSERT":
@@ -100,16 +92,16 @@ def lambda_handler(event, context):
     }
 
 
-# on_crawler_process_inserted({
-#     'links_scraper_crawler_engine': 'SCRAPER',
-#     'domain': 'api.ipify.org',
-#     'url': 'https://api.ipify.org/?format=json',
-#     'crawler_threads_cnt:done_scraping_links': 0,
-#     'url_id-process-index': '753656-1',
-#     'total_scraped_jobs': 0,
-#     'url_id': 753656,
-#     'crawler_process_index': 1,
-#     'total_scraped_links': 0,
-#     'age': 1626371268
-# }
-# )
+on_crawler_process_inserted({
+    'links_scraper_crawler_engine': 'SCRAPER',
+    'domain': 'api.ipify.org',
+    'url': 'https://api.ipify.org/?format=json',
+    'crawler_threads_cnt:done_scraping_links': 0,
+    'url_id-process-index': '753656-1',
+    'total_scraped_jobs': 0,
+    'url_id': 753656,
+    'crawler_process_index': 1,
+    'total_scraped_links': 0,
+    'age': 1626371268
+}
+)
