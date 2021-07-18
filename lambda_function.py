@@ -53,9 +53,6 @@ def parse_image(image):
 def lambda_handler(event, context):
     global redis_connection
 
-    dd = boto3.resource('dynamodb', region_name="eu-west-3")
-
-    
 
     for record in event['Records']:
         try:
