@@ -55,24 +55,42 @@ def lambda_handler(event, context):
 
     dd = boto3.resource('dynamodb', region_name="eu-west-3")
 
-    crawler_threads_table = dd.Table('crawler_threads')
+    
 
     for record in event['Records']:
-        if record['eventName'] == "INSERT":
-            crawler_process = parse_image(record['dynamodb']['NewImage'])
-            # Generate CrawlerThread
+        try:
+            if record['eventName'] == "INSERT":
+                crawler_process = parse_image(record['dynamodb']['NewImage'])
+                # Generate CrawlerThread
 
-            # requests.post('https://api2-scrapers.bebee.com/testcp',
-            #               json=crawler_process)
-            # Generate crawler_thread
-            on_crawler_process_inserted(crawler_process)
+                # requests.post('https://api2-scrapers.bebee.com/testcp',
+                #               json=crawler_process)
+                # Generate crawler_thread
+                on_crawler_process_inserted(crawler_process)
 
-        if record['eventName'] == "MODIFY":
-            on_crawler_process_updated(
-                parse_image(record['dynamodb']['NewImage']),
-                parse_image(record['dynamodb']['OldImage'])
+            if record['eventName'] == "MODIFY":
+                on_crawler_process_updated(
+                    parse_image(record['dynamodb']['NewImage']),
+                    parse_image(record['dynamodb']['OldImage'])
+                )
+        except Exception as ex:
+            aws_access_key_id = 'AKIAQLRVICZQD6ZSXUW7'
+            aws_secret_access_key = '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'
+
+            db = boto3.resource('dynamodb', region_name="eu-west-3",
+                                    aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
+
+            db.Table('stream_processing_errors')
+
+            db.put_item(
+                Item={
+                    'uuid': str(uuid.uuid4()),
+                    'ex': str(ex),
+                    'record':record,
+                    'event':event
+                }
             )
-
+            return { "batchItemFailures": [ {"itemIdentifier": record['dynamodb']['SequenceNumber']} ]  }
     return {
         'statusCode': 200,
         'body': 'ok'
