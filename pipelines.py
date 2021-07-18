@@ -9,14 +9,15 @@ from typing import List
 def on_crawler_process_updated(cp, old_cp) -> List[BatchWriteItemsModel]:
     done_threads = cp.get('threads_done_cnt')
 
-    done_scraping_links = old_cp.get('done_scraping_links') == 1
+    
 
     links = cp.get('links')
     duplicates = cp.get('duplicates')
 
-    real_threads_count = links - duplicates
+    # Duplicates won't get scraped, and we add +1 for the scrape(LINKS) action
+    real_threads_count = links - duplicates + 1
 
-    if done_scraping_links and done_threads >= real_threads_count:
+    if done_threads >= real_threads_count:
         send_completed_process_to_mysql(cp)
         # Update status to completed
 
