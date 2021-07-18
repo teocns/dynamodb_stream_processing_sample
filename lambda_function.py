@@ -72,6 +72,7 @@ def lambda_handler(event, context):
                     parse_image(record['dynamodb']['OldImage'])
                 )
         except Exception as ex:
+            print(ex)
             try:
                 aws_access_key_id = 'AKIAQLRVICZQD6ZSXUW7'
                 aws_secret_access_key = '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'
@@ -89,8 +90,8 @@ def lambda_handler(event, context):
                         'event':event
                     }
                 )
-            except Exception as ex:
-                print(str(ex))
+            except Exception as ex2:
+                print(str(ex2))
                 pass
             return { "batchItemFailures": [ {"itemIdentifier": record['dynamodb']['SequenceNumber']} ]  }
     return {
