@@ -1,13 +1,13 @@
 from functions import update_tracked_url_after_completion
-from redis_cluster.functions import crawler_thread_in_queue
-from db_functions import generate_main_thread_for_crawler_process
+# from redis_cluster.functions import crawler_thread_in_queue
+from functions import generate_main_thread_for_crawler_process
 from mysql_db.send_completed_process import send as send_completed_process_to_mysql
 from config import MAX_CRAWLER_PROCESS_WITHOUT_JOBS
-from batch_write_items_model import BatchWriteItemsModel
+#from batch_write_items_model import BatchWriteItemsModel
 from typing import List
 
 
-def on_crawler_process_updated(cp, old_cp) -> List[BatchWriteItemsModel]:
+def on_crawler_process_updated(cp, old_cp):
     done_threads = cp.get('threads_done_cnt')
 
     
@@ -54,7 +54,7 @@ def on_crawler_process_updated(cp, old_cp) -> List[BatchWriteItemsModel]:
         # return batch_write_items_models
 
 
-def on_crawler_process_inserted(cp) -> List[BatchWriteItemsModel]:
+def on_crawler_process_inserted(cp):
     # Generate crawler thread for scraping links
     generate_main_thread_for_crawler_process(
         crawler_process=cp
