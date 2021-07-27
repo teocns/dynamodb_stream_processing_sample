@@ -1,3 +1,4 @@
+from functions import update_tracked_url_after_completion
 from redis_cluster.functions import crawler_thread_in_queue
 from db_functions import generate_main_thread_for_crawler_process
 from mysql_db.send_completed_process import send as send_completed_process_to_mysql
@@ -19,8 +20,8 @@ def on_crawler_process_updated(cp, old_cp) -> List[BatchWriteItemsModel]:
     print('Checking if should update')
     print('real_threads_count: %s, done_threads: %s' % (str(real_threads_count), str(done_threads)))
     if done_threads >= real_threads_count:
-        print('@@@;send_completed_process_to_mysql')
-        send_completed_process_to_mysql(cp)
+        update_tracked_url_after_completion(cp)
+        #send_completed_process_to_mysql(cp)
         # Update status to completed
 
         # batch_write_items_models = {
