@@ -21,26 +21,28 @@ def get_domains_statistics(domain) -> DomainStatistics:
 
 
 def generate_main_thread_for_crawler_process(crawler_process) -> DomainStatistics:
-    print('Generating main thread for crawler_process')
+    #print('Generating main thread for crawler_process')
     db = boto3.resource('dynamodb')
 
     table = db.Table('crawler_threads')
-    process_id = str(crawler_process.get('url_id-process-index'))
+    process_id = str(crawler_process.get('url_md5#cp_cnt'))
+    
     table.put_item(
         Item={
-            'url_id-process-index': process_id,
             'thread_id': '%s-%s' % (process_id,str(1)),
             'domain': crawler_process.get('domain'),
             'url': crawler_process.get('url'),
-            'url_md5': get_md5(crawler_process.get('url')),
+            #'url_md5': get_md5(crawler_process.get('url')),
             'crawler_engine': crawler_process.get('crawler_engine'),
             'age': int(time.time()),
             #'age_completed': None,
             'is_completed': 0,
-            'links': 0,
-            'duplicates': 0,
-            'jobs': 0,
-            'bytes': 0,
+            'next_crawl': int(time.time()),
+            'ready': 1,
+            #'links': 0,
+            #'duplicates': 0,
+            #'jobs': 0,
+            #'bytes': 0,
             'scrape': 'LINKS',
         },
         # ReturnValues="ALL"
@@ -83,8 +85,6 @@ def update_tracked_url_after_completion(crawler_process):
 
     update_expression_query = "SET " + ", ".join(update_expressions)
 
-
-
     table.update_item(
         Key={
             'url_id': crawler_process.get('url_id')
@@ -100,6 +100,8 @@ def update_tracked_url_after_completion(crawler_process):
             '#cp_last_duplicates': 'cp_last_duplicates'
         }
     )
+
+
 
 # def ban_tracked_url(url_id, reason):
 #     db = boto3.resource('dynamodb', region_name="eu-west-3",
