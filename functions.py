@@ -29,7 +29,7 @@ def generate_main_thread_for_crawler_process(crawler_process) -> DomainStatistic
     
     table.put_item(
         Item={
-            'thread_id': '%s-%s' % (process_id,str(1)),
+            'thread_id': '%s#%s' % (process_id,str(1)),
             'domain': crawler_process.get('domain'),
             'url': crawler_process.get('url'),
             #'url_md5': get_md5(crawler_process.get('url')),
