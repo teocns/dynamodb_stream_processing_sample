@@ -26,6 +26,7 @@ def generate_main_thread_for_crawler_process(crawler_process) -> DomainStatistic
 
     table = db.Table('crawler_threads')
     process_id = str(crawler_process.get('url_md5#cp_cnt'))
+    user_id = crawler_process.get('user_id')
     
     table.put_item(
         Item={
@@ -36,6 +37,7 @@ def generate_main_thread_for_crawler_process(crawler_process) -> DomainStatistic
             'crawler_engine': crawler_process.get('crawler_engine'),
             'age': int(time.time()),
             #'age_completed': None,
+            'user_id': user_id,
             'is_completed': 0,
             'links': 0,
             'duplicates': 0,
@@ -80,7 +82,6 @@ def update_tracked_url_after_completion(crawler_process):
         ':tnow': int(time.time())
     }
     
-
     update_expression_query = "SET " + ", ".join(update_expressions)
 
     table.update_item(
@@ -98,6 +99,8 @@ def update_tracked_url_after_completion(crawler_process):
             '#cp_last_duplicates': 'cp_last_duplicates'
         }
     )
+
+
 
 
 
