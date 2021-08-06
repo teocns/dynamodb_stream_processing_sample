@@ -6,18 +6,16 @@ table = db.Table('tracked_urls')
 
 
 
-import python_dynamodb_lock
+#import python_dynamodb_lock
 
-lock_client = python_dynamodb_lock.python_dynamodb_lock.DynamoDBLockClient(db)
+db = boto3.resource('dynamodb')
 
-
-table.update_item(
+db.Table('crawler_processes').update_item(
     Key={
-        'url': 'asdfsadfdsaf'
+        'url_md5#cp_cnt': '54b6aa8f78ea9a49020e8e86a84721e1#6'
     },
     ExpressionAttributeValues ={
-        ':zero': 0,
-        ':one': 1,
+        ':threads_done_cnt': 213,
     },
-    UpdateExpression = "SET process_cnt = :zero + :one"
+    UpdateExpression = "SET threads_done_cnt = :threads_done_cnt"
 )

@@ -1,4 +1,5 @@
-from config import api_endpoint
+
+
 import os
 import requests
 import boto3

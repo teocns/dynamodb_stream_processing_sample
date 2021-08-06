@@ -96,7 +96,6 @@ def update_tracked_url_after_completion(crawler_process):
     update_expression_query = "SET " + ", ".join(update_expressions)
 
 
-  
     table.update_item(
         Key={
             'url': crawler_process.get('url')
