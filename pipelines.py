@@ -21,6 +21,7 @@ def on_crawler_process_updated(cp, old_cp):
     print('real_threads_count: %s, done_threads: %s' % (str(real_threads_count), str(done_threads)))
     if done_threads >= real_threads_count:
         update_tracked_url_after_completion(cp)
+        
         #send_completed_process_to_mysql(cp)
         # Update status to completed
 

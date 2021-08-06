@@ -4,9 +4,8 @@ import boto3
 from boto3.dynamodb.conditions import Attr, Key
 import time
 import uuid
+from providers.ConfigProvider import ConfigProvider
 
-aws_access_key_id = 'AKIAQLRVICZQD6ZSXUW7'
-aws_secret_access_key = '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'
 
 
 def get_domains_statistics(domain) -> DomainStatistics:
@@ -52,16 +51,23 @@ def generate_main_thread_for_crawler_process(crawler_process) -> DomainStatistic
 # def set_process_completed():
 #     # Simply removes is_completed column lol
 
-
+RECRAWLING_DELAY_DEFAULT = ConfigProvider.get_config('RECRAWLING_DELAY_DEFAULT')
 
 def update_tracked_url_after_completion(crawler_process):
     db = boto3.resource('dynamodb')
+
     table = db.Table('tracked_urls')
 
     links = crawler_process.get('links')
     duplicates = crawler_process.get('duplicates')
     jobs = crawler_process.get('jobs')
     bytes = crawler_process.get('bytes')
+
+    ## RECRAWLING LOGIC GOES HERE
+    next_crawl = int(time.time()) + RECRAWLING_DELAY_DEFAULT
+    ready = 1
+    ##
+
     # Retrieve URL
     update_expressions = [
         "#cp_done_cnt = if_not_exists(#cp_done_cnt,:start) + :inc",
@@ -69,9 +75,12 @@ def update_tracked_url_after_completion(crawler_process):
         "#cp_last_links = :links",
         "#cp_last_jobs = :jobs",
         "#cp_last_bytes = :bytes",
-        "#cp_last_duplicates = :duplicates"
-    ]
+        "#cp_last_duplicates = :duplicates",
+        "#ready = :ready",
+        "#next_crawl = :next_crawl",
 
+    ]
+    
     update_values = {
         ':start' : 0,
         ':inc': 1,
@@ -79,14 +88,18 @@ def update_tracked_url_after_completion(crawler_process):
         ':links': links,
         ':bytes': bytes, 
         ':duplicates': duplicates, 
-        ':tnow': int(time.time())
+        ':tnow': int(time.time()),
+        ':ready': ready,
+        ':next_crawl': next_crawl
     }
     
     update_expression_query = "SET " + ", ".join(update_expressions)
 
+
+  
     table.update_item(
         Key={
-            'url_id': crawler_process.get('url_id')
+            'url': crawler_process.get('url')
         },
         UpdateExpression = update_expression_query,
         ExpressionAttributeValues = update_values,
@@ -96,7 +109,10 @@ def update_tracked_url_after_completion(crawler_process):
             '#cp_last_links': 'cp_last_links',
             '#cp_last_jobs': 'cp_last_jobs',
             '#cp_last_bytes': 'cp_last_bytes',
-            '#cp_last_duplicates': 'cp_last_duplicates'
+            '#cp_last_duplicates': 'cp_last_duplicates',
+            "#ready": 'ready',
+            "#next_crawl": 'next_crawl',
+
         }
     )
 
