@@ -17,7 +17,7 @@ def get_domains_statistics(domain) -> DomainStatistics:
             'domain': domain
         }
     ).get('Item')
-
+ffd
 
 def generate_main_thread_for_crawler_process(crawler_process) -> DomainStatistics:
     #print('Generating main thread for crawler_process')
@@ -40,6 +40,7 @@ def generate_main_thread_for_crawler_process(crawler_process) -> DomainStatistic
             'is_completed': 0,
             'links': 0,
             'duplicates': 0,
+            'proxy': crawler_process.get('proxy'),
             'jobs': 0,
             'bytes': 0,
             'scrape': 'LINKS',
@@ -111,9 +112,31 @@ def update_tracked_url_after_completion(crawler_process):
             '#cp_last_duplicates': 'cp_last_duplicates',
             "#ready": 'ready',
             "#next_crawl": 'next_crawl',
-
         }
     )
+
+
+    
+    # db.Table('domains').update_item(
+    #     Key={
+    #         'domain': crawler_process.get('domain')
+    #     },
+    #     UpdateExpression = "SET TOTAL_SCRAPED_JOBS_CNT = ",
+    #     ExpressionAttributeValues = update_values,
+    #     ExpressionAttributeNames = {
+    #         '#cp_done_cnt': 'cp_done_cnt',
+    #         '#cp_last_done_age': 'cp_last_done_age',
+    #         '#cp_last_links': 'cp_last_links',
+    #         '#cp_last_jobs': 'cp_last_jobs',
+    #         '#cp_last_bytes': 'cp_last_bytes',
+    #         '#cp_last_duplicates': 'cp_last_duplicates',
+    #         "#ready": 'ready',
+    #         "#next_crawl": 'next_crawl',
+    #     }
+    # )
+
+
+    
 
 
 
