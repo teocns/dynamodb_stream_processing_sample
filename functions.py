@@ -17,7 +17,7 @@ def get_domains_statistics(domain) -> DomainStatistics:
             'domain': domain
         }
     ).get('Item')
-ffd
+
 
 def generate_main_thread_for_crawler_process(crawler_process) -> DomainStatistics:
     #print('Generating main thread for crawler_process')
