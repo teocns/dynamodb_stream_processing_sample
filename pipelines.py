@@ -8,12 +8,12 @@ from typing import List
 
 
 def on_crawler_process_updated(cp, old_cp):
-    done_threads = cp.get('threads_done_cnt')
+    done_threads = cp.get('threads_done_cnt',0) or 0
 
     
 
-    links = cp.get('links')
-    duplicates = cp.get('duplicates')
+    links = cp.get('links',0) or 0
+    duplicates = cp.get('duplicates',0) or 0
 
     # Duplicates won't get scraped, and we add +1 for the scrape(LINKS) action
     real_threads_count = links - duplicates + 1
