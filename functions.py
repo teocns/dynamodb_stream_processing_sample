@@ -54,7 +54,22 @@ def generate_main_thread_for_crawler_process(crawler_process) -> DomainStatistic
 
 RECRAWLING_DELAY_DEFAULT = ConfigProvider.get_config('RECRAWLING_DELAY_DEFAULT')
 
+
+
+CACHED_DOMAINS_STATISTICS = {}
+
+def get_domain_statistics(domain):
+    db = boto3.resource('dynamodb')
+
+    return db.Table('domains').query(
+        KeyConditionExpression=Key('domain').eq(domain)
+    ).get('Items')[0]
+
+
+
+
 def update_tracked_url_after_completion(crawler_process):
+
     db = boto3.resource('dynamodb')
 
     table = db.Table('tracked_urls')
@@ -63,11 +78,34 @@ def update_tracked_url_after_completion(crawler_process):
     duplicates = crawler_process.get('duplicates')
     jobs = crawler_process.get('jobs')
     bytes = crawler_process.get('bytes')
+    
+
+    tracked_url = db.Table('tracked_urls').query(
+        KeyConditionExpression=Key('url').eq(crawler_process.get('url'))
+    ).get('Items').pop()
+
+
 
     ## RECRAWLING LOGIC GOES HERE
     next_crawl = int(time.time()) + RECRAWLING_DELAY_DEFAULT
+    next_crawler_engine = "SCRAPER"
+
+    # If tracked_url has has no previous cp_done_cnt and crawler_process.jobs == 0, then set next_crawl to now
+    if tracked_url.get('cp_done_cnt',0) == None and crawler_process.get('jobs',0) == 0:
+        next_crawl = int(time.time())
+        # And also retry with "SPIDER" crawler_engine
+        next_crawler_engine = "SPIDER"
+    
+
+    SHOULD_BAN_URL = False
+    if tracked_url.get('cp_cnt#SPIDER',0) >= 5 and tracked_url.get('jobs',0) == 0:
+        SHOULD_BAN_URL = True
+    
+
+    CRAWLER_PROCESS_FAILED = crawler_process.get('is_failed',0) == 1
+
+
     ready = 1
-    ##
 
     # Retrieve URL
     update_expressions = [
@@ -79,8 +117,26 @@ def update_tracked_url_after_completion(crawler_process):
         "#cp_last_duplicates = :duplicates",
         "#ready = :ready",
         "#next_crawl = :next_crawl",
+        "#crawler_engine = :crawler_engine",
 
     ]
+
+    expr_attribute_names = {
+        '#cp_done_cnt': 'cp_done_cnt',
+        '#cp_last_done_age': 'cp_last_done_age',
+        '#cp_last_links': 'cp_last_links',
+        '#cp_last_jobs': 'cp_last_jobs',
+        '#cp_last_bytes': 'cp_last_bytes',
+        '#cp_last_duplicates': 'cp_last_duplicates',
+        "#ready": 'ready',
+        "#next_crawl": 'next_crawl',
+        "#crawler_engine": 'crawler_engine',
+        "#ban": 'ban',
+        "#ban_issue_timestamp": 'ban_issue_timestamp',
+        "#banned_by": 'banned_by',
+        "#ban_issue_reason": 'ban_issue_reason',
+        "#ban_issued_by": 'ban_issued_by',
+    }
     
     update_values = {
         ':start' : 0,
@@ -91,8 +147,29 @@ def update_tracked_url_after_completion(crawler_process):
         ':duplicates': duplicates, 
         ':tnow': int(time.time()),
         ':ready': ready,
-        ':next_crawl': next_crawl
+        ':next_crawl': next_crawl,
+        ':crawler_engine': next_crawler_engine
     }
+
+
+    if SHOULD_BAN_URL:
+        update_expressions.append("#ban = :ban")
+        update_values[':ban'] = 1
+        update_expressions.append("#ban_issue_timestamp = :tnow")
+        # set #banned_by to "robot"
+        update_expressions.append("#ban_issued_by = :ban_issued_by")
+        update_values[':ban_issued_by'] = "ROBOT"
+        update_expressions.append("#ban_issue_reason = :ban_issue_reason")
+        update_values[':ban_issue_reason'] = "BAN_FOR_REPEATED_CRAWL_WITHOUT_JOBS"
+
+    if CRAWLER_PROCESS_FAILED:
+        update_expressions.append("#cp_failed_cnt = if_not_exists(#cp_failed_cnt,:start) + :inc")
+        update_expressions.append("#has_failed_cp = if_not_exists(#has_failed_cp:inc)")
+        update_expressions.append("#last_failed_cp_age = if_not_exists(#last_failed_cp_age:inc)")
+        expr_attribute_names['#cp_failed_cnt'] = 'cp_failed_cnt'
+        expr_attribute_names['#has_failed_cp'] = 'has_failed_cp'
+        expr_attribute_names['#last_failed_cp_age'] = 'last_failed_cp_age'
+
     
     update_expression_query = "SET " + ", ".join(update_expressions)
 
@@ -103,16 +180,7 @@ def update_tracked_url_after_completion(crawler_process):
         },
         UpdateExpression = update_expression_query,
         ExpressionAttributeValues = update_values,
-        ExpressionAttributeNames = {
-            '#cp_done_cnt': 'cp_done_cnt',
-            '#cp_last_done_age': 'cp_last_done_age',
-            '#cp_last_links': 'cp_last_links',
-            '#cp_last_jobs': 'cp_last_jobs',
-            '#cp_last_bytes': 'cp_last_bytes',
-            '#cp_last_duplicates': 'cp_last_duplicates',
-            "#ready": 'ready',
-            "#next_crawl": 'next_crawl',
-        }
+        ExpressionAttributeNames = expr_attribute_names
     )
 
 
