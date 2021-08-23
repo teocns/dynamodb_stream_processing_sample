@@ -2,23 +2,6 @@ from pipelines import on_crawler_process_inserted, on_crawler_process_updated
 import boto3
 import uuid
 
-# redis_connection = None
-
-
-# def has_redis_connection():
-#     global redis_connection
-#     return isinstance(redis_connection, Redis)
-
-
-# def get_redis_connection():
-#     global redis_connection
-#     return redis_connection
-
-
-# def kill_redis_connection():
-#     global redis_connection
-#     redis_connection.close()
-
 
 def parse_image(image):
     """Parse records incoming from Amazon DynamoDB Update"""
@@ -43,12 +26,9 @@ def parse_image(image):
 
 
 def lambda_handler(event, context):
-    
-
-    print('Lambda handler started')
     for record in event['Records']:
         # try:
-        if record['eventName'] == "INSERT":
+        if record['eventName'] == "INSERT": 
             crawler_process = parse_image(record['dynamodb']['NewImage'])
             print(crawler_process)
             # Generate CrawlerThread
@@ -72,8 +52,10 @@ def lambda_handler(event, context):
     }
 
 
-# on_crawler_process_inserted({
+
+# on_crawler_process_updated({
 #     'links_scraper_crawler_engine': 'SCRAPER',
+#     "url_md5#cp_cnt":"asd#1",
 #     'domain': 'api.ipify.org',
 #     'url': 'https://api.ipify.org/?format=json',
 #     'crawler_threads_cnt:done_scraping_links': 0,
@@ -82,6 +64,9 @@ def lambda_handler(event, context):
 #     'url_id': 753656,
 #     'crawler_process_index': 1,
 #     'total_scraped_links': 0,
+#     "threads_done_cnt": 123,
+#     "links":12,
 #     'age': 1626371268
-# }
+# },
+# {}
 # )
