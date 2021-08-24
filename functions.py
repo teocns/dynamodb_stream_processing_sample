@@ -49,7 +49,7 @@ def generate_main_thread_for_crawler_process(crawler_process) -> DomainStatistic
 # def set_process_completed():
 #     # Simply removes is_completed column lol
 
-RECRAWLING_DELAY_DEFAULT = ConfigProvider.get_config('RECRAWLING_DELAY_DEFAULT')
+RECRAWLING_DELAY_DEFAULT = int(ConfigProvider.get_config('RECRAWLING_DELAY_DEFAULT'))
 
 
 
@@ -143,10 +143,10 @@ def update_tracked_url_after_completion(crawler_process):
         
 
     if HAS_JOBS:
-        deletes.append(
+        deletes.extend([
             "no_jobs_crawled_yet",
             "consecutive_crawls_with_no_jobs"
-        )
+        ])
     else:
         # If it's the first crawler process (cp_cnt == 1), then set "no_jobs_crawled_yet" to 1
         if cp_cnt == 1:
