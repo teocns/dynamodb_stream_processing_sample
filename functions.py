@@ -8,27 +8,18 @@ import uuid
 from providers.ConfigProvider import ConfigProvider
 
 
-
-def get_domains_statistics(domain) -> DomainStatistics:
-    db = boto3.resource('dynamodb')
-
-    table = db.Table('domains_statistics')
-    return table.get_item(
-        Key={
-            'domain': domain
-        }
-    ).get('Item')
-
+crawler_threads_table = boto3.resource('dynamodb').Table('crawler_threads')
+domain_statistics_table = boto3.resource('dynamodb').Table('domains')
+tracked_urls_table = boto3.resource('dynamodb').Table('tracked_urls')
 
 def generate_main_thread_for_crawler_process(crawler_process) -> DomainStatistics:
     #print('Generating main thread for crawler_process')
-    db = boto3.resource('dynamodb')
-
-    table = db.Table('crawler_threads')
+    
+    
     process_id = str(crawler_process.get('url_md5#cp_cnt'))
     user_id = crawler_process.get('user_id')
     
-    table.put_item(
+    crawler_threads_table.put_item(
         Item={
             'thread_id': '%s#%s' % (process_id,str(1)),
             'domain': crawler_process.get('domain'),
@@ -56,11 +47,11 @@ RECRAWLING_DELAY_DEFAULT = int(ConfigProvider.get_config('RECRAWLING_DELAY_DEFAU
 CACHED_DOMAINS_STATISTICS = {}
 
 def get_domain_statistics(domain):
-    db = boto3.resource('dynamodb')
-
-    return db.Table('domains').query(
+    return domain_statistics_table.query(
         KeyConditionExpression=Key('domain').eq(domain)
-    ).get('Items')[0]
+    ).get('Items',[{
+        'domain': domain,
+    }])[0]
 
 
 def inverse_dict(my_dict):
@@ -77,11 +68,7 @@ def inverse_dict(my_dict):
     return result_dict, print(result_dict)
 
 
-def update_tracked_url_after_completion(crawler_process):
-
-    db = boto3.resource('dynamodb')
-
-    
+def update_tracked_url_after_completion(crawler_process):    
 
     links = crawler_process.get('links',0)
     duplicates = crawler_process.get('duplicates',0)
@@ -96,18 +83,9 @@ def update_tracked_url_after_completion(crawler_process):
     next_crawl = int(time.time()) + RECRAWLING_DELAY_DEFAULT
     next_crawler_engine = "SCRAPER"
 
-   
-
-    
-    
-
     CRAWLER_PROCESS_FAILED = crawler_process.get('is_failed',0) == 1
 
-
     ready = 1 
-
-    
-
 
     # Retrieve URL
     updates = {
@@ -125,8 +103,6 @@ def update_tracked_url_after_completion(crawler_process):
     deletes = [
 
     ]
-
- 
 
     if CRAWLER_PROCESS_FAILED:
         updates.update({
@@ -157,10 +133,10 @@ def update_tracked_url_after_completion(crawler_process):
         })
 
 
+
     update_expression_query, expression_attribute_names, expression_attribute_values= generate_expressions(updates,deletes)
-
-
-    db.Table('tracked_urls').update_item(
+    
+    tracked_urls_table.update_item(
         Key={
             'url': crawler_process.get('url')
         },
