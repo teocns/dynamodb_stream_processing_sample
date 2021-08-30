@@ -4,6 +4,8 @@ import uuid
 def generate_expressions(updates={}, deletes=[]):
     # Build expression_attribute_names, expression_attribute_values by assigning str(uuid.uuid4()) to each key
     # update_expressions should represent UpdateExpression for dynamodb attribute
+    if not len(updates) and not len(deletes):
+        raise "No updates"
     expression_attribute_names = {}
     expression_attribute_values = {}
 
