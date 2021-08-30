@@ -108,7 +108,7 @@ def update_tracked_url_after_completion(crawler_process):
         updates.update({
             "cp_failed_cnt": [0,1],
             "has_failed_cp": [1],
-            "has_failed_cp_userid": [0,1],
+            "has_failed_cp_userid": crawler_process.get('user_id'),
             "last_failed_cp_age": [int(time.time())]
         })
     else:
