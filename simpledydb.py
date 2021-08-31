@@ -63,11 +63,11 @@ def generate_expressions(updates={}, deletes=[]):
                 expression_attribute_values[expr_attr_value_key] = real_value
                 this_expression_attribute_values.append(expr_attr_value_key)
                 empty_list_value = []
-                expr_attr_value_key = generate_attribute_name_value()
-                expression_attribute_values[expr_attr_value_key] = empty_list_value
+                expr_attr_value_key_empty_list = generate_attribute_name_value()
+                expression_attribute_values[expr_attr_value_key_empty_list] = empty_list_value
                 # #exceptions = list_append(if_not_exists(#exceptions,:empty_list),:err)
                 string_update_value = "%s = list_append(if_not_exists(%s, %s), %s)" % (
-                    this_expression_attribute_name, this_expression_attribute_name, expr_attr_value_key, this_expression_attribute_values[0])
+                    this_expression_attribute_name, this_expression_attribute_name, expr_attr_value_key_empty_list, expr_attr_value_key)
             if len(updates[real_name]) > 1:
                 real_value = updates[real_name][1]
                 
@@ -91,7 +91,7 @@ def generate_expressions(updates={}, deletes=[]):
                 expression_attribute_values[expr_attr_value_key] = real_value
             this_expression_attribute_values.append(real_value)
             string_update_value = "%s = %s" % (
-                this_expression_attribute_name, this_expression_attribute_values[0])
+                this_expression_attribute_name, expr_attr_value_key)
 
         update_expressions.append(string_update_value)
         # except Exception as ex:
@@ -108,7 +108,8 @@ def generate_expressions(updates={}, deletes=[]):
 
 
 
-# a ={'exceptions': [[0, 1]],'asd': [[0, 1]]}
+# a = {'cp_last_done_age': 1630422514}
+
 
 # x,y,z= generate_expressions(a)
 
