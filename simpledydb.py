@@ -45,17 +45,17 @@ def generate_expressions(updates={}, deletes=[]):
             is_list_append = False
             if type(real_value) == list:
                 is_list_append = True
-            this_real_value.append(real_value)
+            
             if not is_list_append:
                 if real_value in expression_attribute_values_inverted:
                     # Avoid generating new UUID. Save bandwith by using existing UUID
                     expr_attr_value_key = expression_attribute_values_inverted[real_value]
-                    expression_attribute_values[expr_attr_value_key] = expr_attr_value_key
+                    expression_attribute_values[expr_attr_value_key] = real_value
                 else:
                     expr_attr_value_key = generate_attribute_name_value()
                     expression_attribute_values_inverted[real_value] = expr_attr_value_key
                     expression_attribute_values[expr_attr_value_key] = real_value
-                this_expression_attribute_values.append(expr_attr_value_key)
+                this_expression_attribute_values.append(real_value)
                 string_update_value = "%s = if_not_exists(%s, %s)" % (
                     this_expression_attribute_name, this_expression_attribute_name, expr_attr_value_key)
             else:
@@ -70,26 +70,26 @@ def generate_expressions(updates={}, deletes=[]):
                     this_expression_attribute_name, this_expression_attribute_name, expr_attr_value_key, this_expression_attribute_values[0])
             if len(updates[real_name]) > 1:
                 real_value = updates[real_name][1]
-                this_real_value.append(real_value)
+                
                 if real_value in expression_attribute_values_inverted:
                     # Avoid generating new UUID. Save bandwith by using existing UUID
                     expr_attr_value_key = expression_attribute_values_inverted[real_value]
                 else:
                     expr_attr_value_key = generate_attribute_name_value()
                     expression_attribute_values[expr_attr_value_key] = real_value
-                this_expression_attribute_values.append(expr_attr_value_key)
+                this_expression_attribute_values.append(real_value)
                 string_update_value += " + " + \
-                    this_expression_attribute_values[1]
+                    expr_attr_value_key
         else:
             real_value = updates[real_name]
-            this_real_value.append(real_value)
+            
             if repr(updates[real_name]) in expression_attribute_values_inverted:
                 # Avoid generating new UUID. Save bandwith by using existing UUID
                 expr_attr_value_key = expression_attribute_values_inverted[real_value]
             else:
                 expr_attr_value_key = generate_attribute_name_value()
                 expression_attribute_values[expr_attr_value_key] = real_value
-            this_expression_attribute_values.append(expr_attr_value_key)
+            this_expression_attribute_values.append(real_value)
             string_update_value = "%s = %s" % (
                 this_expression_attribute_name, this_expression_attribute_values[0])
 
@@ -108,9 +108,7 @@ def generate_expressions(updates={}, deletes=[]):
 
 
 
-# a = {'cp_done_cnt': [0, 1], 'cp_last_done_age': 1630409026, 'cp_last_links': 0, 'cp_last_jobs': 0, 'cp_last_bytes': 0, 'cp_last_duplicates': 0, 'ready': 1, 'next_crawl': 1630495426, 'cp_failed_cnt': [0, 1], 'has_failed_cp': [1], 'has_failed_cp_userid': '443', 'last_failed_cp_age': [1630409026], 'no_jobs_crawled_yet': 1, 'consecutive_crawls_with_no_jobs': [0, 1]}
-
-
+# a ={'exceptions': [[0, 1]],'asd': [[0, 1]]}
 
 # x,y,z= generate_expressions(a)
 
