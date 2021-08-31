@@ -99,12 +99,14 @@ def update_tracked_url_after_completion(crawler_process):
                 "#id": ":id"
             },
             ExpressionAttributeNames = {
-                "#id": "url_md5#cp_cnt"
+                "#id": "url_md5#cp_cnt",
+                "#is_failed": "is_failed"
             },
             ExpressionAttributeValues = {
-                ":id": crawler_process.get('url_md5#cp_cnt')
+                ":id": crawler_process.get('url_md5#cp_cnt'),
+                ":one": 1
             },
-            UpdateExpression="is_failed = if_not_exists(is_failed,)"
+            UpdateExpression="#is_failed = :one"
         )
 
     ready = 1 
