@@ -27,7 +27,7 @@ def generate_expressions(updates={}, deletes=[]):
 
     for real_name in updates:
         # try:
-        this_expression_attribute_name = generate_attribute_name(real_name)
+        this_expression_attribute_name = generate_attribute_name()
 
         this_expression_attribute_values = [
 
