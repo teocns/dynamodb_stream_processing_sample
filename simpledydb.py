@@ -51,18 +51,18 @@ def generate_expressions(updates={}, deletes=[]):
                     expr_attr_value_key = expression_attribute_values_inverted[real_value]
                     expression_attribute_values[expr_attr_value_key] = expr_attr_value_key
                 else:
-                    expr_attr_value_key = generate_attribute_name_value(real_name)
+                    expr_attr_value_key = generate_attribute_name_value()
                     expression_attribute_values_inverted[real_value] = expr_attr_value_key
                     expression_attribute_values[expr_attr_value_key] = real_value
                 this_expression_attribute_values.append(expr_attr_value_key)
                 string_update_value = "%s = if_not_exists(%s, %s)" % (
                     this_expression_attribute_name, this_expression_attribute_name, expr_attr_value_key)
             else:
-                expr_attr_value_key = generate_attribute_name_value(real_name)
+                expr_attr_value_key = generate_attribute_name_value()
                 expression_attribute_values[expr_attr_value_key] = real_value
                 this_expression_attribute_values.append(expr_attr_value_key)
                 empty_list_value = []
-                expr_attr_value_key = generate_attribute_name_value(real_name) + "_empty"
+                expr_attr_value_key = generate_attribute_name_value()
                 expression_attribute_values[expr_attr_value_key] = empty_list_value
                 # #exceptions = list_append(if_not_exists(#exceptions,:empty_list),:err)
                 string_update_value = "%s = list_append(if_not_exists(%s, %s), %s)" % (
@@ -74,7 +74,7 @@ def generate_expressions(updates={}, deletes=[]):
                     # Avoid generating new UUID. Save bandwith by using existing UUID
                     expr_attr_value_key = expression_attribute_values_inverted[real_value]
                 else:
-                    expr_attr_value_key = generate_attribute_name_value(real_name) + '_incr'
+                    expr_attr_value_key = generate_attribute_name_value()
                     expression_attribute_values[expr_attr_value_key] = real_value
                 this_expression_attribute_values.append(expr_attr_value_key)
                 string_update_value += " + " + this_expression_attribute_values[1]
@@ -85,7 +85,7 @@ def generate_expressions(updates={}, deletes=[]):
                 # Avoid generating new UUID. Save bandwith by using existing UUID
                 expr_attr_value_key = expression_attribute_values_inverted[real_value]
             else:
-                expr_attr_value_key = generate_attribute_name_value(real_name)
+                expr_attr_value_key = generate_attribute_name_value()
                 expression_attribute_values[expr_attr_value_key] = real_value
             this_expression_attribute_values.append(expr_attr_value_key)
             string_update_value = "%s = %s" % (this_expression_attribute_name, this_expression_attribute_values[0])
