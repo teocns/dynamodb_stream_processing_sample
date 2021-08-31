@@ -95,14 +95,16 @@ def update_tracked_url_after_completion(crawler_process):
     # Update the crawler process to set failures
     if CRAWLER_PROCESS_FAILED:
         crawler_processes_table.update_item(
-            KeyConditionExpression = "#id = :id",
+            Key = {
+                "#id": ":id"
+            },
             ExpressionAttributeNames = {
                 "#id": "url_md5#cp_cnt"
             },
             ExpressionAttributeValues = {
                 ":id": crawler_process.get('url_md5#cp_cnt')
             },
-            update_expression_query="is_failed = if_not_exists(is_failed,)"
+            UpdateExpression="is_failed = if_not_exists(is_failed,)"
         )
 
     ready = 1 
