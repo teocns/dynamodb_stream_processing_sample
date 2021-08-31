@@ -106,7 +106,7 @@ def update_tracked_url_after_completion(crawler_process):
                 ":id": crawler_process.get('url_md5#cp_cnt'),
                 ":one": 1
             },
-            UpdateExpression="#is_failed = :one"
+            UpdateExpression="SET #is_failed = :one"
         )
 
     ready = 1 
