@@ -101,7 +101,8 @@ def update_tracked_url_after_completion(crawler_process):
             },
             ExpressionAttributeValues = {
                 ":id": crawler_process.get('url_md5#cp_cnt')
-            }
+            },
+            update_expression_query="is_failed = if_not_exists(is_failed,)"
         )
 
     ready = 1 
@@ -151,10 +152,11 @@ def update_tracked_url_after_completion(crawler_process):
             "consecutive_crawls_with_no_jobs": [0,1]
         })
 
-
-
     update_expression_query, expression_attribute_names, expression_attribute_values= generate_expressions(updates,deletes)
     
+    print ([
+        update_expression_query, expression_attribute_names, expression_attribute_values
+    ])
     tracked_urls_table.update_item(
         Key={
             'url': crawler_process.get('url')
