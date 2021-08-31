@@ -88,7 +88,7 @@ def update_tracked_url_after_completion(crawler_process):
     threads_failed_cnt = int(crawler_process.get('threads_failed_cnt',0) or 0)
     # Determine the % of threads_failed_cnt relative to the amount of "links"
     
-    threads_failed_percentage = int(threads_failed_cnt / links * 100) if links > 0 else 0
+    threads_failed_percentage = int(threads_failed_cnt / links * 100) if links > 0 else 100
     
     CRAWLER_PROCESS_FAILED = threads_failed_percentage > 20 and not HAS_JOBS
 
