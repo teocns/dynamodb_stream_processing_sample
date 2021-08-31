@@ -9,6 +9,7 @@ from providers.ConfigProvider import ConfigProvider
 
 
 crawler_threads_table = boto3.resource('dynamodb').Table('crawler_threads')
+crawler_processes_table = boto3.resource('dynamodb').Table('crawler_processes')
 domain_statistics_table = boto3.resource('dynamodb').Table('domains')
 tracked_urls_table = boto3.resource('dynamodb').Table('tracked_urls')
 
@@ -73,7 +74,7 @@ def update_tracked_url_after_completion(crawler_process):
     links = crawler_process.get('links',0)
     duplicates = crawler_process.get('duplicates',0)
     jobs = crawler_process.get('jobs',0)
-    bytes = crawler_process.get('bytes,0')
+    bytes = crawler_process.get('bytes',0)
     
     cp_cnt = int(crawler_process.get('url_md5#cp_cnt').split('#').pop())
 
@@ -81,9 +82,27 @@ def update_tracked_url_after_completion(crawler_process):
 
     ## RECRAWLING LOGIC GOES HERE
     next_crawl = int(time.time()) + RECRAWLING_DELAY_DEFAULT
-    next_crawler_engine = "SCRAPER"
+    
+    # Determine whether crawler process is failed, by reviewing the following conditions
+    # has at least 20% of the threads are failed, it never gave jobs
+    threads_failed_cnt = int(crawler_process.get('threads_failed_cnt',0) or 0)
+    # Determine the % of threads_failed_cnt relative to the amount of "links"
+    
+    threads_failed_percentage = int(threads_failed_cnt / links * 100) if links > 0 else 0
+    
+    CRAWLER_PROCESS_FAILED = threads_failed_percentage > 20 and not HAS_JOBS
 
-    CRAWLER_PROCESS_FAILED = crawler_process.get('is_failed',0) == 1
+    # Update the crawler process to set failures
+    if CRAWLER_PROCESS_FAILED:
+        crawler_processes_table.update_item(
+            KeyConditionExpression = "#id = :id",
+            ExpressionAttributeNames = {
+                "#id": "url_md5#cp_cnt"
+            },
+            ExpressionAttributeValues = {
+                ":id": crawler_process.get('url_md5#cp_cnt')
+            }
+        )
 
     ready = 1 
 
@@ -97,7 +116,7 @@ def update_tracked_url_after_completion(crawler_process):
         "cp_last_duplicates":duplicates,
         "ready":ready,
         "next_crawl":next_crawl,
-        "crawler_engine":":crawler_engine",
+        #"crawler_engine":":crawler_engine",
     }
 
     deletes = [
