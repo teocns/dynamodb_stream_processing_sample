@@ -3,7 +3,7 @@ import re
 
 def generate_attribute_name():    
     # Strip all characters that are not alphanumeric, underscore, dash, or dot
-    return ":"+re.sub(r'[^a-zA-Z0-9]', '', str(uuid.uuid4()))
+    return "#"+re.sub(r'[^a-zA-Z0-9]', '', str(uuid.uuid4()))
 
 def generate_attribute_name_value():    
     # Strip all characters that are not alphanumeric, underscore, dash, or dot
@@ -101,3 +101,10 @@ def generate_expressions(updates={}, deletes=[]):
         update_expression_query += " REMOVE " + ", ".join(deletes)
 
     return update_expression_query, expression_attribute_names, expression_attribute_values,
+
+
+
+
+print(
+    generate_attribute_name()
+)
