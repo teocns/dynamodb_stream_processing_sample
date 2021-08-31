@@ -2,15 +2,16 @@ import uuid
 import re
 
 
-def generate_attribute_name():
+def generate_attribute_name(a):
     # Strip all characters that are not alphanumeric, underscore, dash, or dot
-    return "#"+re.sub(r'[^a-zA-Z0-9]', '', str(uuid.uuid4()))
+    #return "#"+re.sub(r'[^a-zA-Z0-9]', '', str(uuid.uuid4()))
+    return a
 
 
-def generate_attribute_name_value():
+def generate_attribute_name_value(b):
     # Strip all characters that are not alphanumeric, underscore, dash, or dot
-    return ":"+re.sub(r'[^a-zA-Z0-9]', '', str(uuid.uuid4()))
-
+    #return ":"+re.sub(r'[^a-zA-Z0-9]', '', str(uuid.uuid4()))
+    return b
 
 def generate_expressions(updates={}, deletes=[]):
     print(updates)
@@ -27,7 +28,7 @@ def generate_expressions(updates={}, deletes=[]):
 
     for real_name in updates:
         # try:
-        this_expression_attribute_name = generate_attribute_name()
+        this_expression_attribute_name = generate_attribute_name(real_name)
 
         this_expression_attribute_values = [
 
@@ -51,18 +52,18 @@ def generate_expressions(updates={}, deletes=[]):
                     expr_attr_value_key = expression_attribute_values_inverted[real_value]
                     expression_attribute_values[expr_attr_value_key] = expr_attr_value_key
                 else:
-                    expr_attr_value_key = generate_attribute_name_value()
+                    expr_attr_value_key = generate_attribute_name_value(real_name)
                     expression_attribute_values_inverted[real_value] = expr_attr_value_key
                     expression_attribute_values[expr_attr_value_key] = real_value
                 this_expression_attribute_values.append(expr_attr_value_key)
                 string_update_value = "%s = if_not_exists(%s, %s)" % (
                     this_expression_attribute_name, this_expression_attribute_name, expr_attr_value_key)
             else:
-                expr_attr_value_key = generate_attribute_name_value()
+                expr_attr_value_key = generate_attribute_name_value(real_name)
                 expression_attribute_values[expr_attr_value_key] = real_value
                 this_expression_attribute_values.append(expr_attr_value_key)
                 empty_list_value = []
-                expr_attr_value_key = generate_attribute_name_value()
+                expr_attr_value_key = generate_attribute_name_value(real_name)
                 expression_attribute_values[expr_attr_value_key] = empty_list_value
                 # #exceptions = list_append(if_not_exists(#exceptions,:empty_list),:err)
                 string_update_value = "%s = list_append(if_not_exists(%s, %s), %s)" % (
@@ -74,7 +75,7 @@ def generate_expressions(updates={}, deletes=[]):
                     # Avoid generating new UUID. Save bandwith by using existing UUID
                     expr_attr_value_key = expression_attribute_values_inverted[real_value]
                 else:
-                    expr_attr_value_key = generate_attribute_name_value()
+                    expr_attr_value_key = generate_attribute_name_value(real_name)
                     expression_attribute_values[expr_attr_value_key] = real_value
                 this_expression_attribute_values.append(expr_attr_value_key)
                 string_update_value += " + " + \
@@ -86,7 +87,7 @@ def generate_expressions(updates={}, deletes=[]):
                 # Avoid generating new UUID. Save bandwith by using existing UUID
                 expr_attr_value_key = expression_attribute_values_inverted[real_value]
             else:
-                expr_attr_value_key = generate_attribute_name_value()
+                expr_attr_value_key = generate_attribute_name_value(real_name)
                 expression_attribute_values[expr_attr_value_key] = real_value
             this_expression_attribute_values.append(expr_attr_value_key)
             string_update_value = "%s = %s" % (
@@ -103,3 +104,21 @@ def generate_expressions(updates={}, deletes=[]):
         update_expression_query += " REMOVE " + ", ".join(deletes)
 
     return update_expression_query, expression_attribute_names, expression_attribute_values,
+
+
+
+
+# a = {'cp_done_cnt': [0, 1], 'cp_last_done_age': 1630409026, 'cp_last_links': 0, 'cp_last_jobs': 0, 'cp_last_bytes': 0, 'cp_last_duplicates': 0, 'ready': 1, 'next_crawl': 1630495426, 'cp_failed_cnt': [0, 1], 'has_failed_cp': [1], 'has_failed_cp_userid': '443', 'last_failed_cp_age': [1630409026], 'no_jobs_crawled_yet': 1, 'consecutive_crawls_with_no_jobs': [0, 1]}
+
+
+
+# x,y,z= generate_expressions(a)
+
+# import boto3
+
+# boto3.resource('dynamodb').Table('tracked_urls').update_item(
+#     Key= {'url': 'https://eurojobs.com/browse-by-country/asdzcxzxccxcx/'},
+#     UpdateExpression=x,
+#     ExpressionAttributeNames=y,
+#     ExpressionAttributeValues=z,
+# )
