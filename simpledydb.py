@@ -2,16 +2,16 @@ import uuid
 import re
 
 
-def generate_attribute_name(a):
+def generate_attribute_name():
     # Strip all characters that are not alphanumeric, underscore, dash, or dot
-    #return "#"+re.sub(r'[^a-zA-Z0-9]', '', str(uuid.uuid4()))
-    return a
+    return "#"+re.sub(r'[^a-zA-Z0-9]', '', str(uuid.uuid4()))
+    #return a
 
 
-def generate_attribute_name_value(b):
+def generate_attribute_name_value():
     # Strip all characters that are not alphanumeric, underscore, dash, or dot
-    #return ":"+re.sub(r'[^a-zA-Z0-9]', '', str(uuid.uuid4()))
-    return b
+    return ":"+re.sub(r'[^a-zA-Z0-9]', '', str(uuid.uuid4()))
+    #return b
 
 def generate_expressions(updates={}, deletes=[]):
     print(updates)
@@ -28,7 +28,7 @@ def generate_expressions(updates={}, deletes=[]):
 
     for real_name in updates:
         # try:
-        this_expression_attribute_name = generate_attribute_name(real_name)
+        this_expression_attribute_name = generate_attribute_name()
 
         this_expression_attribute_values = [
 
@@ -52,18 +52,18 @@ def generate_expressions(updates={}, deletes=[]):
                     expr_attr_value_key = expression_attribute_values_inverted[real_value]
                     expression_attribute_values[expr_attr_value_key] = expr_attr_value_key
                 else:
-                    expr_attr_value_key = generate_attribute_name_value(real_name)
+                    expr_attr_value_key = generate_attribute_name_value()
                     expression_attribute_values_inverted[real_value] = expr_attr_value_key
                     expression_attribute_values[expr_attr_value_key] = real_value
                 this_expression_attribute_values.append(expr_attr_value_key)
                 string_update_value = "%s = if_not_exists(%s, %s)" % (
                     this_expression_attribute_name, this_expression_attribute_name, expr_attr_value_key)
             else:
-                expr_attr_value_key = generate_attribute_name_value(real_name)
+                expr_attr_value_key = generate_attribute_name_value()
                 expression_attribute_values[expr_attr_value_key] = real_value
                 this_expression_attribute_values.append(expr_attr_value_key)
                 empty_list_value = []
-                expr_attr_value_key = generate_attribute_name_value(real_name)
+                expr_attr_value_key = generate_attribute_name_value()
                 expression_attribute_values[expr_attr_value_key] = empty_list_value
                 # #exceptions = list_append(if_not_exists(#exceptions,:empty_list),:err)
                 string_update_value = "%s = list_append(if_not_exists(%s, %s), %s)" % (
@@ -75,7 +75,7 @@ def generate_expressions(updates={}, deletes=[]):
                     # Avoid generating new UUID. Save bandwith by using existing UUID
                     expr_attr_value_key = expression_attribute_values_inverted[real_value]
                 else:
-                    expr_attr_value_key = generate_attribute_name_value(real_name)
+                    expr_attr_value_key = generate_attribute_name_value()
                     expression_attribute_values[expr_attr_value_key] = real_value
                 this_expression_attribute_values.append(expr_attr_value_key)
                 string_update_value += " + " + \
@@ -87,7 +87,7 @@ def generate_expressions(updates={}, deletes=[]):
                 # Avoid generating new UUID. Save bandwith by using existing UUID
                 expr_attr_value_key = expression_attribute_values_inverted[real_value]
             else:
-                expr_attr_value_key = generate_attribute_name_value(real_name)
+                expr_attr_value_key = generate_attribute_name_value()
                 expression_attribute_values[expr_attr_value_key] = real_value
             this_expression_attribute_values.append(expr_attr_value_key)
             string_update_value = "%s = %s" % (
