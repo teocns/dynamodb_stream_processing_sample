@@ -141,6 +141,10 @@ def update_tracked_url_after_completion(crawler_process):
         
 
     if HAS_JOBS:
+        updates.update({
+            "last_crawler_engine_with_jobs" :crawler_process.get('crawler_engine'),
+        })
+
         deletes.extend([
             "no_jobs_crawled_yet",
             "consecutive_crawls_with_no_jobs"
