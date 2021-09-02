@@ -108,7 +108,7 @@ def update_tracked_url_after_completion(crawler_process):
         )
 
     ready = 1 
-
+    print("UPDATING URL NOW")
     # Retrieve URL
     updates = {
         "cp_done_cnt":[0,1],
@@ -160,10 +160,7 @@ def update_tracked_url_after_completion(crawler_process):
         })
 
     update_expression_query, expression_attribute_names, expression_attribute_values= generate_expressions(updates,deletes)
-    
-    print ([
-        update_expression_query, expression_attribute_names, expression_attribute_values
-    ])
+  
     tracked_urls_table.update_item(
         Key={
             'url': crawler_process.get('url')
@@ -172,59 +169,4 @@ def update_tracked_url_after_completion(crawler_process):
         ExpressionAttributeValues = expression_attribute_values,
         ExpressionAttributeNames = expression_attribute_names
     )
-
-
-    
-    # db.Table('domains').update_item(
-    #     Key={
-    #         'domain': crawler_process.get('domain')
-    #     },
-    #     UpdateExpression = "SET TOTAL_SCRAPED_JOBS_CNT = ",
-    #     ExpressionAttributeValues = update_values,
-    #     ExpressionAttributeNames = {
-    #         '#cp_done_cnt': 'cp_done_cnt',
-    #         '#cp_last_done_age': 'cp_last_done_age',
-    #         '#cp_last_links': 'cp_last_links',
-    #         '#cp_last_jobs': 'cp_last_jobs',
-    #         '#cp_last_bytes': 'cp_last_bytes',
-    #         '#cp_last_duplicates': 'cp_last_duplicates',
-    #         "#ready": 'ready',
-    #         "#next_crawl": 'next_crawl',
-    #     }
-    # )
-
-
-    
-
-
-
-
-
-# def ban_tracked_url(url_id, reason):
-#     db = boto3.resource('dynamodb', region_name="eu-west-3",
-#                         aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
-
-#     table = db.Table('tracked_urls')
-
-#     # TODO
-
-
-# db = boto3.resource('dynamodb', region_name="eu-west-3",
-#                     aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
-
-# table = db.Table('crawler_processes')
-
-
-# table.update_item(
-#     Key={
-#         'url_id-process-index': 'asdasdsad',
-#     },
-#     UpdateExpression="SET asd = if_not_exists(asd, :start) + :inc",
-#     ExpressionAttributeValues={
-#         ':inc': 1,
-#         ':start': 0,
-#     },
-#     ReturnValues="UPDATED_NEW"
-# )
-
 
