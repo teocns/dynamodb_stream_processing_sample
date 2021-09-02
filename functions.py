@@ -119,6 +119,7 @@ def update_tracked_url_after_completion(crawler_process):
         "cp_last_duplicates":duplicates,
         "ready":ready,
         "next_crawl":next_crawl,
+        "updates": [0,1]
         #"crawler_engine":":crawler_engine",
     }
 
