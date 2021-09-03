@@ -91,21 +91,7 @@ def update_tracked_url_after_completion(crawler_process):
     
     CRAWLER_PROCESS_FAILED = threads_failed_percentage > 20 and not HAS_JOBS
 
-    # Update the crawler process to set failures
-    # if CRAWLER_PROCESS_FAILED:
-        # domain_statistics_table.update_item(
-        #     Key = {
-        #         "url_md5#cp_cnt": crawler_process.get('url_md5#cp_cnt')
-        #     },
-        #     ExpressionAttributeNames = {
-        #         "#is_failed": "is_failed"
-        #     },
-        #     ExpressionAttributeValues = {
-        #         ":one": 1
-        #     },
-        #     UpdateExpression="SET #is_failed = :one"
-        # )
-
+    
     ready = 1 
     print("UPDATING URL NOW")
     # Retrieve URL
@@ -115,6 +101,7 @@ def update_tracked_url_after_completion(crawler_process):
         "cp_last_links":links,
         "cp_last_jobs":jobs,
         "cp_last_bytes":bytes,
+        "jobs": [0, jobs],
         "cp_last_duplicates":duplicates,
         "ready":ready,
         "next_crawl":next_crawl,
