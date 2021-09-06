@@ -1,4 +1,5 @@
-from simpledydb import generate_expressions
+from SimpleDyDb.api import update_item
+from SimpleDyDb.UpdateItemInstructions import UpdateItemInstructions
 from helpers import get_md5
 from models.domains_statistics import DomainStatistics
 import boto3
@@ -145,14 +146,16 @@ def update_tracked_url_after_completion(crawler_process):
             "consecutive_crawls_with_no_jobs": [0,1]
         })
 
-    update_expression_query, expression_attribute_names, expression_attribute_values= generate_expressions(updates,deletes)
+    
   
-    tracked_urls_table.update_item(
+    update_item(
+        tracked_urls_table
         Key={
             'url': crawler_process.get('url')
         },
-        UpdateExpression = update_expression_query,
-        ExpressionAttributeValues = expression_attribute_values,
-        ExpressionAttributeNames = expression_attribute_names
+        UpdateItemInstructions(
+            updates,
+            deletes
+        )
     )
 
