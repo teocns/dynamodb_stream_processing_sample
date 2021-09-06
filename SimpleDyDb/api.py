@@ -48,7 +48,7 @@ def update_item(
                 }
 
                 if len(update_instructions_batch.ExpressionAttributeValues.keys()):
-                    update_item_args['ExpressionAttributeValues'] = update_instructions_batch.ExpressionAttributeValues,
+                    update_item_args['ExpressionAttributeValues'] = update_instructions_batch.ExpressionAttributeValues
 
                 update_length  = len(update_instructions_batch.ExpressionAttributeNames)
 
