@@ -1,5 +1,5 @@
 from SimpleDyDb.api import update_item
-from SimpleDyDb.UpdateItemInstructions import UpdateItemInstructions
+from SimpleDyDb.UpdateItemInstructions import UpdateItemsInstructions
 from helpers import get_md5
 from models.domains_statistics import DomainStatistics
 import boto3
@@ -153,7 +153,7 @@ def update_tracked_url_after_completion(crawler_process):
         {
             'url': crawler_process.get('url')
         },
-        UpdateItemInstructions(
+        UpdateItemsInstructions(
             updates,
             deletes
         )

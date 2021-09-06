@@ -4,8 +4,6 @@ from SimpleDyDb.UpdateItemExpressions import UpdateItemExpressions
 from SimpleDyDb.UpdateItemInstructions import UpdateItemsInstructions
 import boto3
 import math
-from cache import GlobalCache
-from helpers import random_string
 import uuid
 import re
 from itertools import islice
