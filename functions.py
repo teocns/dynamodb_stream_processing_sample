@@ -150,12 +150,12 @@ def update_tracked_url_after_completion(crawler_process):
   
     update_item(
         tracked_urls_table,
-        {
-            'url': crawler_process.get('url')
-        },
         UpdateItemsInstructions(
-            updates,
-            deletes
+            updates=updates,
+            deletes=deletes,
+            key={
+                'url': crawler_process.get('url')
+            }
         )
     )
 
