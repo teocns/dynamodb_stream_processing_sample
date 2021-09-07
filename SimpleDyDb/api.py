@@ -1,6 +1,8 @@
 import boto3
+from SimpleDyDb.ConditionExpression import ConditionExpression
+from SimpleDyDb.ExpressionsBuilder import ExpressionBuilder
 from SimpleDyDb.UpdateItemInstructions import UpdateItemsInstructions
-from SimpleDyDb.helpers import generate_expressions, subtract_items_from_list, subtract_keys_to_dict
+from SimpleDyDb.helpers import subtract_items_from_list, subtract_keys_to_dict
 
 
 
@@ -8,8 +10,7 @@ from SimpleDyDb.helpers import generate_expressions, subtract_items_from_list, s
 
 def update_item(
     table_resource,
-    Key: str,
-    update_instructions : UpdateItemsInstructions
+    update_instructions: UpdateItemsInstructions,
 ):
     """
     Puts a new resource to the database.
@@ -31,18 +32,17 @@ def update_item(
         update_instructions.updates = subtract_keys_to_dict(successfully_updated_keys, update_instructions.updates)
         update_instructions.deletes = subtract_items_from_list(successfully_deleted_keys, update_instructions.deletes)
 
-        update_instructions_batches = generate_expressions(
+        update_instructions_batches = ExpressionBuilder.Generate(
             update_instructions,
             current_batch_factorization
         )
         
         try:
             l = list(update_instructions_batches)
-            it = 0
             for update_instructions_batch in l:
             
                 update_item_args = {
-                    'Key':Key,
+                    'Key':update_instructions.key,
                     'ExpressionAttributeNames': update_instructions_batch.ExpressionAttributeNames,
                     'UpdateExpression': update_instructions_batch.UpdateExpression
                 }
@@ -50,12 +50,20 @@ def update_item(
                 if len(update_instructions_batch.ExpressionAttributeValues.keys()):
                     update_item_args['ExpressionAttributeValues'] = update_instructions_batch.ExpressionAttributeValues
 
+                if update_instructions_batch.ConditionExpression:
+                    update_item_args['ConditionExpression'] = update_instructions_batch.ConditionExpression
+                    # Extend ExpressionAttributeNames and ExpressionAttributeValues
+                                
+                
                 update_length  = len(update_instructions_batch.ExpressionAttributeNames)
 
+                
                 response = table_resource.update_item(
                     **update_item_args
                 )
                 
+                
+
                 print('Updated successfully a batch of %s items' % update_length)
                 
                 # When some batch fails, we need to repeat updates on batches' attributes that were successfully executed
