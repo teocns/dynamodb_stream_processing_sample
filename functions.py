@@ -29,11 +29,11 @@ def generate_main_thread_for_crawler_process(crawler_process) -> DomainStatistic
             #'url_md5': get_md5(crawler_process.get('url')),
             'crawler_engine': crawler_process.get('crawler_engine'),
             'age': int(time.time()),
-            #'age_completed': None,
             'user_id': str(user_id),
             'is_not_completed': 1,
             'proxy': crawler_process.get('proxy'),
             'scrape': 'LINKS',
+            'tracked_url_age': crawler_process.get('tracked_url_age'),
         },
         # ReturnValues="ALL"
     )
