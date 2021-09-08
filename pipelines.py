@@ -10,7 +10,7 @@ from typing import List
 def on_crawler_process_updated(cp, old_cp):
 
     done_threads = cp.get('threads_done_cnt',0) or 0
-    if old_cp.get('threads_done_cnt',0) or 0 > done_threads:
+    if (old_cp.get('threads_done_cnt',0) or 0) < done_threads:
         links = cp.get('links',0) or 0
         duplicates = cp.get('duplicates',0) or 0
 

@@ -94,7 +94,7 @@ def update_tracked_url_after_completion(crawler_process):
 
     
     ready = 1 
-    print("UPDATING URL NOW")
+    
     # Retrieve URL
     updates = {
         "cp_done_cnt":[0,1],
